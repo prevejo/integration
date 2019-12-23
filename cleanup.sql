@@ -1,0 +1,10 @@
+delete from transporte.tb_terminal;
+delete from transporte.tb_area_parada;
+delete from transporte.tb_area_integracao;
+delete from transporte.tb_percurso_parada;
+delete from transporte.tb_parada;
+delete from transporte.tb_horario;
+delete from transporte.tb_operacao;
+delete from transporte.tb_operador;
+delete from transporte.tb_percurso;
+delete from transporte.tb_linha;
