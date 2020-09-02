@@ -34,8 +34,10 @@ O arquivo ./start.sh tem como função acionar o script e transportar os dados p
 # Docker
 O build do arquivo Dockerfile produz uma imagem que quando executada, aciona o arquivo ./start.sh e realiza todo o processo de importação dos dados.
 
-É necessário informar os parâmetros da base remota para o arquivo ./start.sh.
-Na execução do container com a imagem do Dockerfile deve ser passado os parâmetros de ambiente:
+O parâmetro `EXPORT_TYPE` identifica o destino [ 'db', 'h2', 'dump' ] dos dados importados. Quando não informado assume o valor `dump`.
+
+`db` sinaliza que os dados devem ser enviados para uma base de dados remota. Na execução do container com a imagem do Dockerfile deve também ser 
+passado os parâmetros de ambiente:
 
 DB_ADDR=<endereço da base remota>
 
@@ -49,10 +51,14 @@ DB_USER=<usuário do banco>
 
 DB_PASS=<senha do banco>
 
-Quando algum destes parâmetros não é informado, o script exporta a base dados para o arquivo [ /tmp/data-h2.sql ] dentro do container para posterior copia.
+`h2` sinaliza que os dados devem ser exportados para um arquivo .sql capaz de ser utilizado na inicialização de um banco de dados h2. 
+Será criado o arquivo `/tmp/data-h2.sql`.
 
-Build: `docker build -t integration -f Dockerfile` .
+`dump` sinaliza que os dados devem ser exportados para um arquivo .sql resultado de um postgre dump da base de dados formada na importação. 
+Será criado o arquivo `/tmp/data-postgis.sql`.
 
-Execução: `docker run -i --name container-integration --env-file env.list integration:latest`
+O build da imagem pode ser feito com: `docker build -t integration -f Dockerfile` .
 
-Copia do arquivo exportado: `docker cp container-integration:/tmp/data-h2.sql .`
+A execução pode se feita com: `docker run -i --name container-integration --env-file env.list integration:latest`
+
+Copia de um arquivo exportado pode ser feita com: `docker cp container-integration:/tmp/data-h2.sql .`

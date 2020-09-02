@@ -36,16 +36,25 @@ python3 main.py
 echo '======= Fetch data complete'
 
 
-EXPORT_TYPE='DB'
-
-if [ -z "$DB_ADDR" ] || [ -z "$DB_PORT" ] || [ -z "$DB_NAME" ] || [ -z "$DB_SCHEMA" ] || [ -z "$DB_USER" ] || [ -z "$DB_PASS" ]; then
-	EXPORT_TYPE='FILE'
+if [ -z "$EXPORT_TYPE" ]; then
+	EXPORT_TYPE='dump'
 fi
+
 
 echo "======= Export type: [ $EXPORT_TYPE ]"
 
-if [ "$EXPORT_TYPE" == "DB" ]; then
-	./start-export-db.sh
-else
-	./start-export-file.sh
+if [ "$EXPORT_TYPE" == "db" ]; then
+	if [ -z "$DB_ADDR" ] || [ -z "$DB_PORT" ] || [ -z "$DB_NAME" ] || [ -z "$DB_SCHEMA" ] || [ -z "$DB_USER" ] || [ -z "$DB_PASS" ]; then
+		fail 'Missing database parameters!'
+	else
+		./start-export-db.sh
+	fi
+fi
+
+if [ "$EXPORT_TYPE" == "h2" ]; then
+	./start-export-h2.sh
+fi
+
+if [ "$EXPORT_TYPE" == "dump" ]; then
+	./start-export-dump.sh
 fi
