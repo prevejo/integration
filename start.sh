@@ -28,41 +28,24 @@ rm -f /tmp/tmp.sql
 PGPASSWORD=postgres psql -h localhost -U postgres -d prevejodb -f /integration/schema.sql
 
 
-if [ -z "$DB_ADDR" ]; then
-	fail 'Parameter DB_ADDR not set'
-fi
-if [ -z "$DB_PORT" ]; then
-	fail 'Parameter DB_PORT not set'
-fi
-if [ -z "$DB_NAME" ]; then
-	fail 'Parameter DB_NAME not set'
-fi
-if [ -z "$DB_SCHEMA" ]; then
-	fail 'Parameter DB_SCHEMA not set'
-fi
-if [ -z "$DB_USER" ]; then
-	fail 'Parameter DB_USER not set'
-fi
-if [ -z "$DB_PASS" ]; then
-	fail 'Parameter DB_PASS not set'
-fi
-
 cd /integration
 
 echo '======= Starting migration...'
 python3 main.py
 
-echo '======= Exporting data...'
-PGPASSWORD=postgres pg_dump -d prevejodb -h localhost -U postgres -a -b -n $DB_SCHEMA -f /tmp/output.sql
+echo '======= Fetch data complete'
 
-cd /tmp
 
-echo 'begin;' > /tmp/push.sql
-cat /integration/cleanup.sql >> /tmp/push.sql
-cat /tmp/output.sql >> /tmp/push.sql
-echo 'commit;' >> /tmp/push.sql
+EXPORT_TYPE='DB'
 
-PGPASSWORD=$DB_PASS psql -q -h $DB_ADDR -p $DB_PORT -d $DB_NAME -U $DB_USER -f /tmp/push.sql
-#PGPASSWORD=$DB_PASS pg_restore -h $DB_ADDR -p $DB_PORT -d $DB_NAME -U $DB_USER --single-transaction /tmp/output.sql
+if [ -z "$DB_ADDR" ] || [ -z "$DB_PORT" ] || [ -z "$DB_NAME" ] || [ -z "$DB_SCHEMA" ] || [ -z "$DB_USER" ] || [ -z "$DB_PASS" ]; then
+	EXPORT_TYPE='FILE'
+fi
 
-echo '======= Done!'
+echo "======= Export type: [ $EXPORT_TYPE ]"
+
+if [ "$EXPORT_TYPE" == "DB" ]; then
+	./start-export-db.sh
+else
+	./start-export-file.sh
+fi

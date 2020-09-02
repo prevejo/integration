@@ -48,3 +48,11 @@ DB_SCHEMA=<schema onde os dados serão transferidos>
 DB_USER=<usuário do banco>
 
 DB_PASS=<senha do banco>
+
+Quando algum destes parâmetros não é informado, o script exporta a base dados para o arquivo [ /tmp/data-h2.sql ] dentro do container para posterior copia.
+
+Build: `docker build -t integration -f Dockerfile` .
+
+Execução: `docker run -i --name container-integration --env-file env.list integration:latest`
+
+Copia do arquivo exportado: `docker cp container-integration:/tmp/data-h2.sql .`
