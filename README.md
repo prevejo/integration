@@ -34,7 +34,8 @@ O arquivo ./start.sh tem como função acionar o script e transportar os dados p
 # Docker
 O build do arquivo Dockerfile produz uma imagem que quando executada, aciona o arquivo ./start.sh e realiza todo o processo de importação dos dados.
 
-O parâmetro `EXPORT_TYPE` identifica o destino [ 'db', 'h2', 'dump' ] dos dados importados. Quando não informado assume o valor `dump`.
+O parâmetro `EXPORT_TYPE` identifica o destino [ 'db', 'h2', 'dump' ] dos dados importados. Quando não informado o base de dados não é exportada 
+e o container se mantém em execução.
 
 `db` sinaliza que os dados devem ser enviados para uma base de dados remota. Na execução do container com a imagem do Dockerfile deve também ser 
 passado os parâmetros de ambiente:
@@ -59,6 +60,6 @@ Será criado o arquivo `/tmp/data-postgis.sql`.
 
 O build da imagem pode ser feito com: `docker build -t integration -f Dockerfile` .
 
-A execução pode se feita com: `docker run -i --name container-integration --env-file env.list integration:latest`
+A execução pode se feita com: `docker run -i --name container-integration --env-file env.list -p 127.0.0.1:5432:5432 integration:latest`
 
 Copia de um arquivo exportado pode ser feita com: `docker cp container-integration:/tmp/data-h2.sql .`
